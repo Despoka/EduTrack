@@ -396,9 +396,9 @@ def get_recommendations(student_id):
     student_grades = get_student_grades(student_id)
     dependency_graph = get_dependency_graph()
     
-    # If student has no grades, recommend all chapters
+    # If student has no grades, recommend all as "Very Necessary" instead of "No Data"
     if not student_grades:
-        return {chapter.id: "No Data" for chapter in chapters}
+        return {chapter.id: "Very Necessary" for chapter in chapters}
     
     # Train model
     model = train_recommendation_model()
@@ -434,9 +434,11 @@ def get_recommendations(student_id):
                     prediction = model.predict([features])[0]
                     recommendations[chapter.id] = prediction
                 else:
-                    recommendations[chapter.id] = "Complete Prerequisites"
+                    # Changed from "Complete Prerequisites" to "Very Necessary"
+                    recommendations[chapter.id] = "Very Necessary"
             else:
-                recommendations[chapter.id] = "Not Started"
+                # Changed from "Not Started" to "Very Necessary"
+                recommendations[chapter.id] = "Very Necessary"
         else:
             # Student has a grade for this chapter
             score = student_grades[chapter.id]

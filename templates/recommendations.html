@@ -41,7 +41,6 @@
                             <p><span class="score-unnecessary">Unnecessary</span> - Score between 80-90%</p>
                             <p><span class="score-required">Required</span> - Score between 70-80%</p>
                             <p><span class="score-very-necessary">Very Necessary</span> - Score below 70%</p>
-                            <p><span class="score-no-data">No Data</span> - No score available</p>
                         </div>
                     </div>
                 </div>
@@ -65,8 +64,6 @@
                         <option value="Unnecessary">Unnecessary (80-90)</option>
                         <option value="Required">Required (70-80)</option>
                         <option value="Very Necessary">Very Necessary (<70)</option>
-                        <option value="Not Started">Not Started</option>
-                        <option value="Complete Prerequisites">Complete Prerequisites</option>
                     </select>
                 </div>
             </div>
@@ -172,9 +169,7 @@
         'Special Class': 0,
         'Unnecessary': 0,
         'Required': 0,
-        'Very Necessary': 0,
-        'Not Started': 0,
-        'Complete Prerequisites': 0
+        'Very Necessary': 0
     };
     
     {% for student in students %}
@@ -205,8 +200,6 @@
                     <li><strong>Unnecessary (80-90):</strong> Student has good understanding and additional classes are not necessary</li>
                     <li><strong>Required (70-80):</strong> Student would benefit from additional classes</li>
                     <li><strong>Very Necessary (&lt;70):</strong> Student requires additional classes to improve understanding</li>
-                    <li><strong>Complete Prerequisites:</strong> Student should first complete prerequisite chapters</li>
-                    <li><strong>Not Started:</strong> Student has not yet started this chapter</li>
                 </ul>
                 <p>The system considers chapter dependencies to provide more accurate recommendations.</p>
             </div>
