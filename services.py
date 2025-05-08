@@ -283,13 +283,13 @@ def initialize_indonesian_sample_data():
 def get_performance_category(score):
     """Determine the performance category based on score"""
     if score >= 90:
-        return "Special Class"
+        return "Kelas Khusus"
     elif 80 <= score < 90:
-        return "Unnecessary"
+        return "Tidak Diperlukan"
     elif 70 <= score < 80:
-        return "Required"
+        return "Diperlukan"
     else:
-        return "Very Necessary"
+        return "Sangat Diperlukan"
 
 def get_student_grades(student_id):
     """Get all grades for a student"""
