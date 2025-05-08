@@ -51,13 +51,13 @@
 
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Recommendations Filter</h5>
+        <h5 class="mb-0">Filter Rekomendasi</h5>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="category-filter" class="form-label">Filter by Category</label>
+                    <label for="category-filter" class="form-label">Filter berdasarkan Kategori</label>
                     <select id="category-filter" class="form-control">
                         <option value="all">Semua Kategori</option>
                         <option value="Kelas Khusus">Kelas Khusus (>90)</option>
@@ -73,7 +73,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Student Recommendations</h5>
+        <h5 class="mb-0">Rekomendasi Siswa</h5>
     </div>
     <div class="card-body">
         {% if students %}
@@ -81,11 +81,11 @@
             <table class="table table-hover sortable">
                 <thead>
                     <tr>
-                        <th>Student</th>
-                        <th>Chapter</th>
-                        <th>Current Score</th>
-                        <th>Recommendation</th>
-                        <th>Dependencies</th>
+                        <th>Siswa</th>
+                        <th>Bab</th>
+                        <th>Nilai Saat Ini</th>
+                        <th>Rekomendasi</th>
+                        <th>Prasyarat</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,19 +120,19 @@
                                         <span class="score-very-necessary">{{ current_score.value }}</span>
                                         {% endif %}
                                     {% else %}
-                                        <span class="text-muted">Not graded</span>
+                                        <span class="text-muted">Belum dinilai</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if recommendation == "Special Class" %}
+                                    {% if recommendation == "Kelas Khusus" %}
                                     <span class="score-special">{{ recommendation }}</span>
-                                    {% elif recommendation == "Unnecessary" %}
+                                    {% elif recommendation == "Tidak Diperlukan" %}
                                     <span class="score-unnecessary">{{ recommendation }}</span>
-                                    {% elif recommendation == "Required" %}
+                                    {% elif recommendation == "Diperlukan" %}
                                     <span class="score-required">{{ recommendation }}</span>
-                                    {% elif recommendation == "Very Necessary" %}
+                                    {% elif recommendation == "Sangat Diperlukan" %}
                                     <span class="score-very-necessary">{{ recommendation }}</span>
-                                    {% elif recommendation == "Complete Prerequisites" %}
+                                    {% elif recommendation == "Complete Prerequisites" or recommendation == "Special Class" or recommendation == "Unnecessary" or recommendation == "Required" or recommendation == "Very Necessary" %}
                                     <span class="badge bg-warning text-dark">{{ recommendation }}</span>
                                     {% elif recommendation == "Not Started" %}
                                     <span class="badge bg-secondary">{{ recommendation }}</span>
@@ -148,7 +148,7 @@
                                         {% endfor %}
                                     </ul>
                                     {% else %}
-                                    <span class="text-muted">None</span>
+                                    <span class="text-muted">Tidak Ada</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -158,7 +158,7 @@
             </table>
         </div>
         {% else %}
-        <p class="text-muted">No students found in this class.</p>
+        <p class="text-muted">Tidak ada siswa yang ditemukan di kelas ini.</p>
         {% endif %}
     </div>
 </div>
@@ -166,10 +166,10 @@
 <script>
     // Prepare recommendation statistics for chart
     const recommendationStats = {
-        'Special Class': 0,
-        'Unnecessary': 0,
-        'Required': 0,
-        'Very Necessary': 0
+        'Kelas Khusus': 0,
+        'Tidak Diperlukan': 0,
+        'Diperlukan': 0,
+        'Sangat Diperlukan': 0
     };
     
     {% for student in students %}
@@ -183,25 +183,25 @@
 
 {% else %}
 <div class="alert alert-info">
-    <i class="fas fa-info-circle me-2"></i> Please select a class to view recommendations
+    <i class="fas fa-info-circle me-2"></i> Silakan pilih kelas untuk melihat rekomendasi
 </div>
 
 <div class="row">
     <div class="col-md-6 mx-auto">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">About Recommendations</h5>
+                <h5 class="mb-0">Tentang Rekomendasi</h5>
             </div>
             <div class="card-body">
-                <p>The recommendation system uses a Random Forest algorithm to analyze student performance across different chapters and their dependencies.</p>
-                <p>Based on the analysis, students are categorized into one of these recommendation groups:</p>
+                <p>Sistem rekomendasi menggunakan algoritma Random Forest untuk menganalisis kinerja siswa di berbagai bab dan ketergantungannya.</p>
+                <p>Berdasarkan analisis, siswa dikategorikan ke dalam salah satu kelompok rekomendasi berikut:</p>
                 <ul>
-                    <li><strong>Special Class (>90):</strong> Student has exceptional understanding and may benefit from advanced material</li>
-                    <li><strong>Unnecessary (80-90):</strong> Student has good understanding and additional classes are not necessary</li>
-                    <li><strong>Required (70-80):</strong> Student would benefit from additional classes</li>
-                    <li><strong>Very Necessary (&lt;70):</strong> Student requires additional classes to improve understanding</li>
+                    <li><strong>Kelas Khusus (>90):</strong> Siswa memiliki pemahaman yang sangat baik dan dapat mengikuti materi tingkat lanjut</li>
+                    <li><strong>Tidak Diperlukan (80-90):</strong> Siswa memiliki pemahaman yang baik dan kelas tambahan tidak diperlukan</li>
+                    <li><strong>Diperlukan (70-80):</strong> Siswa akan mendapat manfaat dari kelas tambahan</li>
+                    <li><strong>Sangat Diperlukan (&lt;70):</strong> Siswa memerlukan kelas tambahan untuk meningkatkan pemahaman</li>
                 </ul>
-                <p>The system considers chapter dependencies to provide more accurate recommendations.</p>
+                <p>Sistem ini mempertimbangkan ketergantungan antar bab untuk memberikan rekomendasi yang lebih akurat.</p>
             </div>
         </div>
     </div>

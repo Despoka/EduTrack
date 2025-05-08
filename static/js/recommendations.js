@@ -35,12 +35,10 @@ function createRecommendationSummaryChart(stats) {
     if (!ctx) return;
     
     const categories = [
-        'Special Class',
-        'Unnecessary',
-        'Required',
-        'Very Necessary',
-        'Not Started',
-        'Complete Prerequisites'
+        'Kelas Khusus',
+        'Tidak Diperlukan',
+        'Diperlukan',
+        'Sangat Diperlukan'
     ];
     
     const data = categories.map(cat => stats[cat] || 0);
