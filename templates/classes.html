@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Classes - Student Performance Analysis</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Classes & Academic Years</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Academic Year</h5>
+            </div>
+            <div class="card-body">
+                <form id="add-year-form" method="POST" action="{{ url_for('classes') }}">
+                    <div class="form-group mb-3">
+                        <label for="year-name" class="form-label">Academic Year Name</label>
+                        <input type="text" class="form-control" id="year-name" name="year_name" placeholder="e.g., 2022/2023">
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_year" value="1">
+                        <i class="fas fa-plus me-1"></i> Add Academic Year
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Academic Years</h5>
+            </div>
+            <div class="card-body">
+                {% if years %}
+                <div class="table-container">
+                    <table class="table table-hover sortable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Academic Year</th>
+                                <th>Number of Classes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for year in years %}
+                            <tr>
+                                <td>{{ year.id }}</td>
+                                <td>{{ year.name }}</td>
+                                <td>{{ year.classes|length }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No academic years added yet. Create your first academic year to get started.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Class</h5>
+            </div>
+            <div class="card-body">
+                <form id="add-class-form" method="POST" action="{{ url_for('classes') }}">
+                    <div class="form-group mb-3">
+                        <label for="class-name" class="form-label">Class Name</label>
+                        <input type="text" class="form-control" id="class-name" name="class_name" placeholder="e.g., Class 10A">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="year-id" class="form-label">Academic Year</label>
+                        <select id="year-id" name="year_id" class="form-control">
+                            <option value="">Select Academic Year</option>
+                            {% for year in years %}
+                            <option value="{{ year.id }}">{{ year.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_class" value="1">
+                        <i class="fas fa-plus me-1"></i> Add Class
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Classes</h5>
+            </div>
+            <div class="card-body">
+                {% if classes %}
+                <div class="table-container">
+                    <table class="table table-hover sortable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Class Name</th>
+                                <th>Academic Year</th>
+                                <th class="no-sort">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for class in classes %}
+                            <tr>
+                                <td>{{ class.id }}</td>
+                                <td>{{ class.name }}</td>
+                                <td>{{ class.academic_year.name }}</td>
+                                <td>
+                                    <a href="{{ url_for('students', class_id=class.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-user-graduate me-1"></i> Students
+                                    </a>
+                                    <a href="{{ url_for('dashboard', class_id=class.id) }}" class="btn btn-sm btn-outline-secondary ms-1">
+                                        <i class="fas fa-chart-bar me-1"></i> Dashboard
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No classes added yet. Create an academic year first, then add classes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/classes.js') }}"></script>
+{% endblock %}

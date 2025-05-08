@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Chapters - Student Performance Analysis</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Chapters & Dependencies</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Chapter</h5>
+            </div>
+            <div class="card-body">
+                <form id="add-chapter-form" method="POST" action="{{ url_for('chapters') }}">
+                    <div class="form-group mb-3">
+                        <label for="chapter-name" class="form-label">Chapter Name</label>
+                        <input type="text" class="form-control" id="chapter-name" name="chapter_name" placeholder="e.g., Algebra Basics">
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_chapter" value="1">
+                        <i class="fas fa-plus me-1"></i> Add Chapter
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Dependency</h5>
+            </div>
+            <div class="card-body">
+                <form id="add-dependency-form" method="POST" action="{{ url_for('chapters') }}">
+                    <div class="form-group mb-3">
+                        <label for="chapter-id" class="form-label">Chapter</label>
+                        <select id="chapter-id" name="chapter_id" class="form-control">
+                            <option value="">Select Chapter</option>
+                            {% for chapter in chapters %}
+                            <option value="{{ chapter.id }}">{{ chapter.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">This chapter depends on...</small>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="dependency-id" class="form-label">Dependency</label>
+                        <select id="dependency-id" name="dependency_id" class="form-control">
+                            <option value="">Select Dependency</option>
+                            {% for chapter in chapters %}
+                            <option value="{{ chapter.id }}">{{ chapter.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">...this prerequisite chapter</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_dependency" value="1">
+                        <i class="fas fa-link me-1"></i> Add Dependency
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Chapters</h5>
+            </div>
+            <div class="card-body">
+                {% if chapters %}
+                <div class="table-container">
+                    <table class="table table-hover sortable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Chapter Name</th>
+                                <th>Dependencies</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for chapter in chapters %}
+                            <tr>
+                                <td>{{ chapter.id }}</td>
+                                <td>{{ chapter.name }}</td>
+                                <td>
+                                    {% if chapter.dependencies %}
+                                    <ul class="mb-0 ps-3">
+                                        {% for dep in chapter.dependencies %}
+                                        <li>{{ dep.dependency_of.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No chapters added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Dependencies</h5>
+            </div>
+            <div class="card-body">
+                {% if dependencies %}
+                <div class="table-container">
+                    <table class="table table-hover sortable">
+                        <thead>
+                            <tr>
+                                <th>Chapter</th>
+                                <th>Depends On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dep in dependencies %}
+                            <tr>
+                                <td>{{ dep.chapter.name }}</td>
+                                <td>{{ dep.dependency_of.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No dependencies defined yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Dependency Graph</h5>
+            </div>
+            <div class="card-body">
+                <div id="dependency-graph" style="height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass dependency map to JavaScript
+    const dependencyMapData = {{ dependency_map|tojson }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chapters.js') }}"></script>
+{% endblock %}

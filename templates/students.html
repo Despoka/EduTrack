@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Students - Student Performance Analysis</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Students Management</h1>
+    <div class="form-group">
+        <label for="class-selector" class="form-label">Select Class</label>
+        <select id="class-selector" class="form-control">
+            <option value="">Select a class</option>
+            {% for class in classes %}
+            <option value="{{ class.id }}" {% if selected_class and selected_class.id == class.id %}selected{% endif %}>
+                {{ class.name }} ({{ class.academic_year.name }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% if selected_class %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Student to {{ selected_class.name }}</h5>
+            </div>
+            <div class="card-body">
+                <form id="add-student-form" method="POST" action="{{ url_for('students') }}">
+                    <div class="form-group mb-3">
+                        <label for="student-name" class="form-label">Student Name</label>
+                        <input type="text" class="form-control" id="student-name" name="student_name" placeholder="Enter student name">
+                    </div>
+                    <input type="hidden" name="class_id" value="{{ selected_class.id }}">
+                    <button type="submit" class="btn btn-primary" name="add_student" value="1">
+                        <i class="fas fa-plus me-1"></i> Add Student
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Students in {{ selected_class.name }}</h5>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                <div class="table-container">
+                    <table class="table table-hover sortable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Name</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.id }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>
+                                    {% set grades = student.grades %}
+                                    {% if grades %}
+                                    {% set total_score = 0 %}
+                                    {% set count = 0 %}
+                                    {% for grade in grades %}
+                                        {% set total_score = total_score + grade.score %}
+                                        {% set count = count + 1 %}
+                                    {% endfor %}
+                                    {% if count > 0 %}
+                                        {% set avg_score = (total_score / count)|round(1) %}
+                                        {% if avg_score >= 90 %}
+                                        <span class="score-special">{{ avg_score }}</span>
+                                        {% elif avg_score >= 80 %}
+                                        <span class="score-unnecessary">{{ avg_score }}</span>
+                                        {% elif avg_score >= 70 %}
+                                        <span class="score-required">{{ avg_score }}</span>
+                                        {% else %}
+                                        <span class="score-very-necessary">{{ avg_score }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="score-no-data">N/A</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="score-no-data">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No students added to this class yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if students %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student Grades</h5>
+    </div>
+    <div class="card-body">
+        {% set chapters = namespace(all=[]) %}
+        {% for student in students %}
+            {% for grade in student.grades %}
+                {% if grade.chapter not in chapters.all %}
+                    {% set chapters.all = chapters.all + [grade.chapter] %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        
+        {% set all_chapters = [] %}
+        {% set all_chapters = namespace(list=Chapter.query.all()) %}
+        
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        {% for chapter in all_chapters.list %}
+                        <th>{{ chapter.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        {% for chapter in all_chapters.list %}
+                            {% set grade = namespace(found=false, score=0) %}
+                            {% for g in student.grades %}
+                                {% if g.chapter_id == chapter.id %}
+                                    {% set grade.found = true %}
+                                    {% set grade.score = g.score %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <td>
+                                {% if grade.found %}
+                                <div class="score-display" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}" data-score="{{ grade.score }}">
+                                    {% if grade.score >= 90 %}
+                                    <span class="score-special">{{ grade.score }}</span>
+                                    {% elif grade.score >= 80 %}
+                                    <span class="score-unnecessary">{{ grade.score }}</span>
+                                    {% elif grade.score >= 70 %}
+                                    <span class="score-required">{{ grade.score }}</span>
+                                    {% else %}
+                                    <span class="score-very-necessary">{{ grade.score }}</span>
+                                    {% endif %}
+                                </div>
+                                <form class="grade-form" action="{{ url_for('update_grades') }}" method="post" style="display: none;" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" value="{{ grade.score }}">
+                                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                                        <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
+                                        <button type="button" class="btn btn-sm btn-danger cancel-edit">✗</button>
+                                    </div>
+                                </form>
+                                {% else %}
+                                <div class="score-display" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}" data-score="">
+                                    <span class="score-no-data">N/A</span>
+                                </div>
+                                <form class="grade-form" action="{{ url_for('update_grades') }}" method="post" style="display: none;" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" placeholder="Score">
+                                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                                        <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
+                                        <button type="button" class="btn btn-sm btn-danger cancel-edit">✗</button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-3">
+            <small class="text-muted">Click on any score to edit it. Click outside to cancel.</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i> Please select a class to manage students
+</div>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Create a Class First</h5>
+            </div>
+            <div class="card-body">
+                <p>To manage students, you need to first create a class.</p>
+                <a href="{{ url_for('classes') }}" class="btn btn-primary">
+                    <i class="fas fa-chalkboard me-1"></i> Go to Classes Management
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/students.js') }}"></script>
+{% endblock %}

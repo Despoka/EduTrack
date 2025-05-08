@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Dashboard - Student Performance Analysis</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Performance Dashboard</h1>
+    <div class="form-group">
+        <label for="class-selector" class="form-label">Select Class</label>
+        <select id="class-selector" class="form-control">
+            <option value="">Select a class</option>
+            {% for class in classes %}
+            <option value="{{ class.id }}" {% if selected_class and selected_class.id == class.id %}selected{% endif %}>
+                {{ class.name }} ({{ class.academic_year.name }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% if selected_class %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Class Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Class:</strong> {{ selected_class.name }}</p>
+                <p><strong>Academic Year:</strong> {{ selected_class.academic_year.name }}</p>
+                <p><strong>Number of Students:</strong> {{ students|length }}</p>
+                <div class="mt-3">
+                    <a href="{{ url_for('students', class_id=selected_class.id) }}" class="btn btn-primary">
+                        <i class="fas fa-user-graduate me-1"></i> Manage Students
+                    </a>
+                    <a href="{{ url_for('recommendations', class_id=selected_class.id) }}" class="btn btn-secondary ms-2">
+                        <i class="fas fa-lightbulb me-1"></i> View Recommendations
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Performance Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="performance-distribution-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Average Scores by Chapter</h5>
+    </div>
+    <div class="card-body">
+        <div class="chart-container">
+            <canvas id="average-scores-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Performance Heatmap</h5>
+        <a href="{{ url_for('students', class_id=selected_class.id) }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-edit me-1"></i> Edit Grades
+        </a>
+    </div>
+    <div class="card-body">
+        <div id="performance-heatmap" class="table-container"></div>
+    </div>
+</div>
+
+<script>
+    // Pass performance data to JavaScript
+    const performanceData = {{ performance_data|tojson }};
+</script>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i> Please select a class to view the dashboard
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Getting Started</h5>
+            </div>
+            <div class="card-body">
+                <p>Welcome to the Student Performance Analysis System! To get started:</p>
+                <ol>
+                    <li>Create an <a href="{{ url_for('classes') }}">Academic Year</a></li>
+                    <li>Create a <a href="{{ url_for('classes') }}">Class</a> within the academic year</li>
+                    <li>Add <a href="{{ url_for('students') }}">Students</a> to the class</li>
+                    <li>Define <a href="{{ url_for('chapters') }}">Chapters</a> and their dependencies</li>
+                    <li>Enter student grades for each chapter</li>
+                    <li>View <a href="{{ url_for('recommendations') }}">Recommendations</a> for additional classes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">System Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>This system helps you track, analyze, and provide recommendations for additional mathematics classes based on students' performance across different chapters and their dependencies.</p>
+                <p>Performance categories:</p>
+                <ul>
+                    <li><span class="score-special">Special Class (>90)</span></li>
+                    <li><span class="score-unnecessary">Unnecessary (80-90)</span></li>
+                    <li><span class="score-required">Required (70-80)</span></li>
+                    <li><span class="score-very-necessary">Very Necessary (&lt;70)</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

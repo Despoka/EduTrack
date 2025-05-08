@@ -1,0 +1,382 @@
+/* Main Styles for Student Performance Analysis System */
+
+:root {
+    --primary: #1565C0;
+    --secondary: #2E7D32;
+    --warning: #FFA000;
+    --danger: #C62828;
+    --background: #F5F7FA;
+    --text: #212121;
+    --light-text: #6C757D;
+    --border: #E0E0E0;
+    --spacing: 16px;
+}
+
+body {
+    font-family: 'Roboto', 'Open Sans', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Layout */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--spacing);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(var(--spacing) * 2);
+    padding-bottom: var(--spacing);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Card styles */
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--spacing);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: var(--spacing);
+    border-bottom: 1px solid var(--border);
+    background-color: rgba(21, 101, 192, 0.05);
+    font-weight: 500;
+}
+
+.card-body {
+    padding: var(--spacing);
+}
+
+.card-footer {
+    padding: var(--spacing);
+    border-top: 1px solid var(--border);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Tables */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    background-color: rgba(21, 101, 192, 0.05);
+    color: var(--primary);
+    padding: calc(var(--spacing) * 0.75);
+    font-weight: 500;
+    border-bottom: 2px solid var(--border);
+}
+
+td {
+    padding: calc(var(--spacing) * 0.75);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Form elements */
+.form-group {
+    margin-bottom: var(--spacing);
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: calc(var(--spacing) * 0.5);
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.2);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: calc(var(--spacing) * 0.25);
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 0.75);
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: #0D47A1;
+    border-color: #0D47A1;
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #1B5E20;
+    border-color: #1B5E20;
+}
+
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+}
+
+.btn-warning:hover {
+    background-color: #FF8F00;
+    border-color: #FF8F00;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: #B71C1C;
+    border-color: #B71C1C;
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+/* Alerts */
+.alert {
+    padding: var(--spacing);
+    margin-bottom: var(--spacing);
+    border-radius: 4px;
+    border-left: 4px solid transparent;
+}
+
+.alert-success {
+    background-color: rgba(46, 125, 50, 0.1);
+    border-left-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.alert-warning {
+    background-color: rgba(255, 160, 0, 0.1);
+    border-left-color: var(--warning);
+    color: var(--warning);
+}
+
+.alert-danger {
+    background-color: rgba(198, 40, 40, 0.1);
+    border-left-color: var(--danger);
+    color: var(--danger);
+}
+
+.alert-info {
+    background-color: rgba(21, 101, 192, 0.1);
+    border-left-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--primary);
+    color: white;
+    padding: var(--spacing);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-right: var(--spacing);
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: calc(var(--spacing) * 0.5);
+    transition: color 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: white;
+}
+
+/* Utilities */
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.text-muted { color: var(--light-text); }
+
+.bg-primary { background-color: var(--primary); color: white; }
+.bg-secondary { background-color: var(--secondary); color: white; }
+.bg-warning { background-color: var(--warning); color: white; }
+.bg-danger { background-color: var(--danger); color: white; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: calc(var(--spacing) * 0.25); }
+.mb-2 { margin-bottom: calc(var(--spacing) * 0.5); }
+.mb-3 { margin-bottom: var(--spacing); }
+.mb-4 { margin-bottom: calc(var(--spacing) * 1.5); }
+.mb-5 { margin-bottom: calc(var(--spacing) * 3); }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: calc(var(--spacing) * 0.25); }
+.mt-2 { margin-top: calc(var(--spacing) * 0.5); }
+.mt-3 { margin-top: var(--spacing); }
+.mt-4 { margin-top: calc(var(--spacing) * 1.5); }
+.mt-5 { margin-top: calc(var(--spacing) * 3); }
+
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.align-items-center { align-items: center; }
+.justify-content-between { justify-content: space-between; }
+
+/* Performance categories */
+.score-special {
+    color: white;
+    background-color: var(--primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.score-unnecessary {
+    color: white;
+    background-color: var(--secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.score-required {
+    color: white;
+    background-color: var(--warning);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.score-very-necessary {
+    color: white;
+    background-color: var(--danger);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.score-no-data {
+    color: var(--text);
+    background-color: var(--border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Charts and visualizations */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: var(--spacing);
+}
+
+.performance-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing);
+}
+
+.metric-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: var(--spacing);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 500;
+    margin: 0.5rem 0;
+}
+
+.metric-title {
+    font-size: 0.875rem;
+    color: var(--light-text);
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: calc(var(--spacing) * 0.75);
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .performance-metrics {
+        grid-template-columns: 1fr;
+    }
+}

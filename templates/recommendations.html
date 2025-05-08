@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Recommendations - Student Performance Analysis</title>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Class Recommendations</h1>
+    <div class="form-group">
+        <label for="class-selector" class="form-label">Select Class</label>
+        <select id="class-selector" class="form-control">
+            <option value="">Select a class</option>
+            {% for class in classes %}
+            <option value="{{ class.id }}" {% if class_obj and class_obj.id == class.id %}selected{% endif %}>
+                {{ class.name }} ({{ class.academic_year.name }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% if class_obj %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Recommendations Summary for {{ class_obj.name }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="chart-container">
+                    <canvas id="recommendation-summary-chart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Performance Categories</h6>
+                        <div class="mt-3">
+                            <p><span class="score-special">Special Class</span> - Score greater than 90%</p>
+                            <p><span class="score-unnecessary">Unnecessary</span> - Score between 80-90%</p>
+                            <p><span class="score-required">Required</span> - Score between 70-80%</p>
+                            <p><span class="score-very-necessary">Very Necessary</span> - Score below 70%</p>
+                            <p><span class="score-no-data">No Data</span> - No score available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recommendations Filter</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="category-filter" class="form-label">Filter by Category</label>
+                    <select id="category-filter" class="form-control">
+                        <option value="all">All Categories</option>
+                        <option value="Special Class">Special Class (>90)</option>
+                        <option value="Unnecessary">Unnecessary (80-90)</option>
+                        <option value="Required">Required (70-80)</option>
+                        <option value="Very Necessary">Very Necessary (<70)</option>
+                        <option value="Not Started">Not Started</option>
+                        <option value="Complete Prerequisites">Complete Prerequisites</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student Recommendations</h5>
+    </div>
+    <div class="card-body">
+        {% if students %}
+        <div class="table-container">
+            <table class="table table-hover sortable">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Chapter</th>
+                        <th>Current Score</th>
+                        <th>Recommendation</th>
+                        <th>Dependencies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        {% for chapter in chapters %}
+                            {% set recommendation = recommendations[student.id][chapter.id] if student.id in recommendations and chapter.id in recommendations[student.id] else "No Data" %}
+                            
+                            {% set current_score = namespace(value=None) %}
+                            {% for grade in student.grades %}
+                                {% if grade.chapter_id == chapter.id %}
+                                    {% set current_score.value = grade.score %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% set dependency_names = namespace(list=[]) %}
+                            {% for dep in chapter.dependencies %}
+                                {% set dependency_names.list = dependency_names.list + [dep.dependency_of.name] %}
+                            {% endfor %}
+                            
+                            <tr class="recommendation-row" data-category="{{ recommendation }}">
+                                <td>{{ student.name }}</td>
+                                <td>{{ chapter.name }}</td>
+                                <td>
+                                    {% if current_score.value is not none %}
+                                        {% if current_score.value >= 90 %}
+                                        <span class="score-special">{{ current_score.value }}</span>
+                                        {% elif current_score.value >= 80 %}
+                                        <span class="score-unnecessary">{{ current_score.value }}</span>
+                                        {% elif current_score.value >= 70 %}
+                                        <span class="score-required">{{ current_score.value }}</span>
+                                        {% else %}
+                                        <span class="score-very-necessary">{{ current_score.value }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Not graded</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if recommendation == "Special Class" %}
+                                    <span class="score-special">{{ recommendation }}</span>
+                                    {% elif recommendation == "Unnecessary" %}
+                                    <span class="score-unnecessary">{{ recommendation }}</span>
+                                    {% elif recommendation == "Required" %}
+                                    <span class="score-required">{{ recommendation }}</span>
+                                    {% elif recommendation == "Very Necessary" %}
+                                    <span class="score-very-necessary">{{ recommendation }}</span>
+                                    {% elif recommendation == "Complete Prerequisites" %}
+                                    <span class="badge bg-warning text-dark">{{ recommendation }}</span>
+                                    {% elif recommendation == "Not Started" %}
+                                    <span class="badge bg-secondary">{{ recommendation }}</span>
+                                    {% else %}
+                                    <span class="badge bg-light text-dark">{{ recommendation }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dependency_names.list %}
+                                    <ul class="mb-0 ps-3">
+                                        {% for dep_name in dependency_names.list %}
+                                        <li>{{ dep_name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No students found in this class.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Prepare recommendation statistics for chart
+    const recommendationStats = {
+        'Special Class': 0,
+        'Unnecessary': 0,
+        'Required': 0,
+        'Very Necessary': 0,
+        'Not Started': 0,
+        'Complete Prerequisites': 0
+    };
+    
+    {% for student in students %}
+        {% for chapter in chapters %}
+            {% if student.id in recommendations and chapter.id in recommendations[student.id] %}
+                recommendationStats['{{ recommendations[student.id][chapter.id] }}'] += 1;
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</script>
+
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i> Please select a class to view recommendations
+</div>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">About Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <p>The recommendation system uses a Random Forest algorithm to analyze student performance across different chapters and their dependencies.</p>
+                <p>Based on the analysis, students are categorized into one of these recommendation groups:</p>
+                <ul>
+                    <li><strong>Special Class (>90):</strong> Student has exceptional understanding and may benefit from advanced material</li>
+                    <li><strong>Unnecessary (80-90):</strong> Student has good understanding and additional classes are not necessary</li>
+                    <li><strong>Required (70-80):</strong> Student would benefit from additional classes</li>
+                    <li><strong>Very Necessary (&lt;70):</strong> Student requires additional classes to improve understanding</li>
+                    <li><strong>Complete Prerequisites:</strong> Student should first complete prerequisite chapters</li>
+                    <li><strong>Not Started:</strong> Student has not yet started this chapter</li>
+                </ul>
+                <p>The system considers chapter dependencies to provide more accurate recommendations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
+{% endblock %}
