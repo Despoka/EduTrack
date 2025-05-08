@@ -9,18 +9,18 @@ def initialize_sample_data():
     if Chapter.query.count() > 0:
         return
     
-    # Create basic math chapters
+    # Create basic math chapters with Indonesian translations
     chapters = [
-        "Algebra Basics",
-        "Linear Equations",
-        "Inequalities",
-        "Functions",
-        "Polynomials",
-        "Quadratic Equations",
-        "Exponential Functions",
-        "Logarithmic Functions",
-        "Trigonometry Basics",
-        "Trigonometric Functions"
+        "Dasar Aljabar (Algebra Basics)",
+        "Persamaan Linier (Linear Equations)",
+        "Pertidaksamaan (Inequalities)",
+        "Fungsi (Functions)",
+        "Polinomial (Polynomials)",
+        "Persamaan Kuadrat (Quadratic Equations)",
+        "Fungsi Eksponensial (Exponential Functions)",
+        "Fungsi Logaritma (Logarithmic Functions)",
+        "Dasar Trigonometri (Trigonometry Basics)",
+        "Fungsi Trigonometri (Trigonometric Functions)"
     ]
     
     chapter_objects = {}
@@ -33,16 +33,16 @@ def initialize_sample_data():
     
     # Define dependencies
     dependencies = [
-        ("Linear Equations", "Algebra Basics"),
-        ("Inequalities", "Algebra Basics"),
-        ("Functions", "Algebra Basics"),
-        ("Polynomials", "Algebra Basics"),
-        ("Quadratic Equations", "Polynomials"),
-        ("Quadratic Equations", "Linear Equations"),
-        ("Exponential Functions", "Functions"),
-        ("Logarithmic Functions", "Exponential Functions"),
-        ("Trigonometric Functions", "Trigonometry Basics"),
-        ("Trigonometric Functions", "Functions")
+        ("Persamaan Linier (Linear Equations)", "Dasar Aljabar (Algebra Basics)"),
+        ("Pertidaksamaan (Inequalities)", "Dasar Aljabar (Algebra Basics)"),
+        ("Fungsi (Functions)", "Dasar Aljabar (Algebra Basics)"),
+        ("Polinomial (Polynomials)", "Dasar Aljabar (Algebra Basics)"),
+        ("Persamaan Kuadrat (Quadratic Equations)", "Polinomial (Polynomials)"),
+        ("Persamaan Kuadrat (Quadratic Equations)", "Persamaan Linier (Linear Equations)"),
+        ("Fungsi Eksponensial (Exponential Functions)", "Fungsi (Functions)"),
+        ("Fungsi Logaritma (Logarithmic Functions)", "Fungsi Eksponensial (Exponential Functions)"),
+        ("Fungsi Trigonometri (Trigonometric Functions)", "Dasar Trigonometri (Trigonometry Basics)"),
+        ("Fungsi Trigonometri (Trigonometric Functions)", "Fungsi (Functions)")
     ]
     
     for chapter_name, dependency_name in dependencies:
@@ -54,6 +54,121 @@ def initialize_sample_data():
             dependency_id=dependency.id
         )
         db.session.add(dep)
+    
+    db.session.commit()
+    
+def initialize_indonesian_sample_data():
+    """Initialize sample Indonesian data for demonstration purposes"""
+    
+    # Check if we already have sample data
+    if AcademicYear.query.count() > 0:
+        return
+        
+    # Create academic years
+    academic_years = [
+        "Tahun Ajaran 2023/2024",
+        "Tahun Ajaran 2024/2025"
+    ]
+    
+    year_objects = {}
+    for year_name in academic_years:
+        year = AcademicYear(name=year_name)
+        db.session.add(year)
+        db.session.flush()
+        year_objects[year_name] = year
+        
+    # Create classes
+    classes = [
+        ("Kelas 10A", "Tahun Ajaran 2023/2024"),
+        ("Kelas 10B", "Tahun Ajaran 2023/2024"),
+        ("Kelas 11A", "Tahun Ajaran 2024/2025"),
+    ]
+    
+    class_objects = {}
+    for class_name, year_name in classes:
+        class_obj = Class(name=class_name, academic_year_id=year_objects[year_name].id)
+        db.session.add(class_obj)
+        db.session.flush()
+        class_objects[class_name] = class_obj
+        
+    # Create students with Indonesian names
+    students = [
+        # Class 10A
+        ("Budi Santoso", "Kelas 10A"),
+        ("Siti Nurhaliza", "Kelas 10A"),
+        ("Ahmad Ridwan", "Kelas 10A"),
+        ("Dewi Safitri", "Kelas 10A"),
+        ("Rini Marlina", "Kelas 10A"),
+        ("Agus Hermawan", "Kelas 10A"),
+        ("Rina Wijaya", "Kelas 10A"),
+        ("Dedi Kurniawan", "Kelas 10A"),
+        ("Lia Megawati", "Kelas 10A"),
+        ("Hadi Pranoto", "Kelas 10A"),
+        
+        # Class 10B
+        ("Bambang Suparno", "Kelas 10B"),
+        ("Anisa Rahma", "Kelas 10B"),
+        ("Joko Widodo", "Kelas 10B"),
+        ("Nadia Putri", "Kelas 10B"),
+        ("Rizki Pratama", "Kelas 10B"),
+        
+        # Class 11A
+        ("Dian Sastro", "Kelas 11A"),
+        ("Eko Prasetyo", "Kelas 11A"),
+        ("Fani Maharani", "Kelas 11A"),
+        ("Irfan Hakim", "Kelas 11A"),
+        ("Novita Sari", "Kelas 11A")
+    ]
+    
+    student_objects = {}
+    for student_name, class_name in students:
+        student = Student(name=student_name, class_id=class_objects[class_name].id)
+        db.session.add(student)
+        db.session.flush()
+        student_objects[student_name] = student
+        
+    # Get all chapters
+    chapters = Chapter.query.all()
+    
+    # Create grades with realistic distributions
+    import random
+    
+    # For demonstration, we'll give more varied scores to class 10A
+    for student_name, student in student_objects.items():
+        if "Kelas 10A" in student_name or student.class_id == class_objects["Kelas 10A"].id:
+            # Give grades for all chapters to class 10A (our main demo class)
+            for chapter in chapters:
+                # Generate a base score for the student that's somewhat consistent
+                base_ability = random.uniform(60, 95)
+                
+                # Adjust score based on chapter complexity (later chapters are harder)
+                chapter_difficulty = 0
+                if "Persamaan Kuadrat" in chapter.name or "Fungsi Eksponensial" in chapter.name:
+                    chapter_difficulty = -10  # Harder chapters
+                elif "Dasar Aljabar" in chapter.name or "Persamaan Linier" in chapter.name:
+                    chapter_difficulty = 10   # Easier chapters
+                
+                # Add some randomness
+                score = base_ability + chapter_difficulty + random.uniform(-15, 15)
+                score = max(50, min(100, score))  # Keep between 50-100
+                
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
+                db.session.add(grade)
+        
+        elif "Kelas 10B" in student_name or student.class_id == class_objects["Kelas 10B"].id:
+            # Give grades for only the first 5 chapters to class 10B
+            for chapter in chapters[:5]:
+                score = random.uniform(65, 90)
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
+                db.session.add(grade)
+                
+        elif "Kelas 11A" in student_name or student.class_id == class_objects["Kelas 11A"].id:
+            # Class 11A has more advanced material covered
+            for chapter in chapters:
+                if random.random() < 0.8:  # 80% chance to have a grade for each chapter
+                    score = random.uniform(70, 95)  # Higher average scores for 11A
+                    grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
+                    db.session.add(grade)
     
     db.session.commit()
 

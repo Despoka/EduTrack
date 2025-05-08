@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from models import db, AcademicYear, Class, Student, Chapter, ChapterDependency, Grade
-from services import get_recommendations, initialize_sample_data
+from services import get_recommendations, initialize_sample_data, initialize_indonesian_sample_data
 import utils
 
 # Configure logging
@@ -23,6 +23,8 @@ with app.app_context():
     db.create_all()
     # Initialize sample chapter dependencies structure
     initialize_sample_data()
+    # Initialize Indonesian sample data
+    initialize_indonesian_sample_data()
     
 # Add global template context
 @app.context_processor
