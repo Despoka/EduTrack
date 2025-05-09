@@ -216,7 +216,7 @@ def update_grades():
 def recommendations():
     class_id = request.args.get('class_id')
     if not class_id:
-        flash('Please select a class', 'warning')
+        flash('Silakan pilih kelas', 'warning')
         return redirect(url_for('dashboard'))
     
     class_obj = Class.query.get(class_id)
@@ -225,15 +225,19 @@ def recommendations():
     
     # Get recommendations for all students in the class
     recommendations_data = {}
+    action_recommendations_data = {}
+    
     for student in students:
-        student_recommendations = get_recommendations(student.id)
+        student_recommendations, student_actions = get_recommendations(student.id)
         recommendations_data[student.id] = student_recommendations
+        action_recommendations_data[student.id] = student_actions
     
     return render_template('recommendations.html',
                            class_obj=class_obj,
                            students=students,
                            chapters=chapters,
-                           recommendations=recommendations_data)
+                           recommendations=recommendations_data,
+                           action_recommendations=action_recommendations_data)
 
 @app.route('/api/performance_data')
 def api_performance_data():

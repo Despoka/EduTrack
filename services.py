@@ -416,7 +416,9 @@ def get_recommendations(student_id):
     
     # If student has no grades, recommend all as "Very Necessary" instead of "No Data"
     if not student_grades:
-        return {chapter.id: "Sangat Diperlukan" for chapter in chapters}
+        recs = {chapter.id: "Sangat Diperlukan" for chapter in chapters}
+        actions = {chapter.id: f"Mulai belajar {chapter.name} (belum ada nilai)" for chapter in chapters}
+        return recs, actions
     
     # Train model
     model = train_recommendation_model()
