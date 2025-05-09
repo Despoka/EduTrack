@@ -85,7 +85,6 @@
                         <th>Bab</th>
                         <th>Nilai Saat Ini</th>
                         <th>Rekomendasi</th>
-                        <th>Tindakan yang Disarankan</th>
                         <th>Prasyarat</th>
                     </tr>
                 </thead>
@@ -139,13 +138,6 @@
                                     <span class="badge bg-secondary">{{ recommendation }}</span>
                                     {% else %}
                                     <span class="badge bg-light text-dark">{{ recommendation }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if student.id in action_recommendations and chapter.id in action_recommendations[student.id] %}
-                                        <span class="text-dark">{{ action_recommendations[student.id][chapter.id] }}</span>
-                                    {% else %}
-                                        <span class="text-muted">Tidak ada rekomendasi</span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -210,12 +202,6 @@
                     <li><strong>Sangat Diperlukan (&lt;70):</strong> Siswa memerlukan kelas tambahan untuk meningkatkan pemahaman</li>
                 </ul>
                 <p>Sistem ini mempertimbangkan ketergantungan antar bab untuk memberikan rekomendasi yang lebih akurat.</p>
-                <p>Selain itu, sistem secara otomatis menghasilkan <strong>tindakan yang disarankan</strong> berdasarkan performa siswa:</p>
-                <ul>
-                    <li>Siswa dengan nilai rendah akan mendapatkan rekomendasi jam tambahan yang lebih banyak</li>
-                    <li>Siswa yang belum memenuhi prasyarat akan diminta menyelesaikan bab-bab prasyarat terlebih dahulu</li>
-                    <li>Siswa dengan nilai tinggi akan mendapatkan rekomendasi materi lanjutan</li>
-                </ul>
             </div>
         </div>
     </div>
