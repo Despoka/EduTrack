@@ -385,6 +385,23 @@ def train_recommendation_model():
     
     return model
 
+def generate_action_recommendation(category, score, chapter_name):
+    """Generate specific action recommendation based on category and score"""
+    if category == "Kelas Khusus":
+        return f"Berikan materi lanjutan untuk {chapter_name}"
+    elif category == "Tidak Diperlukan":
+        return f"Tidak diperlukan kelas tambahan untuk {chapter_name}"
+    elif category == "Diperlukan":
+        hours = 2  # Base hours
+        return f"Berikan {hours} jam kelas tambahan untuk {chapter_name}"
+    elif category == "Sangat Diperlukan":
+        # Calculate hours based on how far below 70 the score is
+        deficit = 70 - score
+        hours = 2 + min(round(deficit / 10), 3)  # 2-5 hours based on deficit
+        return f"Berikan {hours} jam kelas tambahan untuk {chapter_name} (prioritas tinggi)"
+    else:
+        return f"Evaluasi pengetahuan {chapter_name}"
+
 def get_recommendations(student_id):
     """Get recommendations for additional classes for a student"""
     student = Student.query.get(student_id)
@@ -393,18 +410,20 @@ def get_recommendations(student_id):
     
     # Get all chapters and student grades
     chapters = Chapter.query.all()
+    chapters_dict = {chapter.id: chapter for chapter in chapters}  # For easy lookup
     student_grades = get_student_grades(student_id)
     dependency_graph = get_dependency_graph()
     
     # If student has no grades, recommend all as "Very Necessary" instead of "No Data"
     if not student_grades:
-        return {chapter.id: "Very Necessary" for chapter in chapters}
+        return {chapter.id: "Sangat Diperlukan" for chapter in chapters}
     
     # Train model
     model = train_recommendation_model()
     
     # Generate recommendations for each chapter
     recommendations = {}
+    action_recommendations = {}
     
     for chapter in chapters:
         if chapter.id not in student_grades:
@@ -433,16 +452,25 @@ def get_recommendations(student_id):
                     # Predict
                     prediction = model.predict([features])[0]
                     recommendations[chapter.id] = prediction
+                    avg_score = np.mean(dependency_scores)
+                    action_recommendations[chapter.id] = generate_action_recommendation(
+                        prediction, avg_score, chapter.name
+                    )
                 else:
-                    # Changed from "Complete Prerequisites" to "Very Necessary"
-                    recommendations[chapter.id] = "Very Necessary"
+                    # Changed from "Complete Prerequisites" to "Sangat Diperlukan"
+                    recommendations[chapter.id] = "Sangat Diperlukan"
+                    action_recommendations[chapter.id] = f"Selesaikan prasyarat untuk {chapter.name} terlebih dahulu"
             else:
-                # Changed from "Not Started" to "Very Necessary"
-                recommendations[chapter.id] = "Very Necessary"
+                # Changed from "Not Started" to "Sangat Diperlukan"
+                recommendations[chapter.id] = "Sangat Diperlukan"
+                action_recommendations[chapter.id] = f"Mulai belajar {chapter.name} (belum ada nilai)"
         else:
             # Student has a grade for this chapter
             score = student_grades[chapter.id]
             category = get_performance_category(score)
             recommendations[chapter.id] = category
+            action_recommendations[chapter.id] = generate_action_recommendation(
+                category, score, chapter.name
+            )
     
-    return recommendations
+    return recommendations, action_recommendations
