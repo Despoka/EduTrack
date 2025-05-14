@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,17 +54,17 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == url_for('students') %}active{% endif %}" href="{{ url_for('students') }}">
-                            <i class="fas fa-user-graduate me-1"></i>Students
+                            <i class="fas fa-user-graduate me-1"></i>Siswa
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == url_for('chapters') %}active{% endif %}" href="{{ url_for('chapters') }}">
-                            <i class="fas fa-book me-1"></i>Chapters
+                            <i class="fas fa-book me-1"></i>Bab
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == url_for('recommendations') %}active{% endif %}" href="{{ url_for('recommendations') }}">
-                            <i class="fas fa-lightbulb me-1"></i>Recommendations
+                            <i class="fas fa-lightbulb me-1"></i>Rekomendasi
                         </a>
                     </li>
                     <li class="nav-item">
@@ -98,7 +98,7 @@
     <!-- Footer -->
     <footer class="bg-light py-4 mt-5">
         <div class="container text-center">
-            <p class="text-muted mb-0">EduTrack - Student Performance Analysis System &copy; {{ now.year }}</p>
+            <p class="text-muted mb-0">EduTrack - Sistem Analisis Kinerja Siswa &copy; {{ now.year }}</p>
         </div>
     </footer>
     
