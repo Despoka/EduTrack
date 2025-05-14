@@ -281,12 +281,12 @@ def initialize_indonesian_sample_data():
     db.session.commit()
 
 def get_performance_category(score):
-    """Determine the performance category based on score"""
-    if score >= 90:
+    """Determine the performance category based on score (0-1 scale)"""
+    if score >= 0.9:
         return "Kelas Khusus"
-    elif 80 <= score < 90:
+    elif 0.8 <= score < 0.9:
         return "Tidak Diperlukan"
-    elif 70 <= score < 80:
+    elif 0.7 <= score < 0.8:
         return "Diperlukan"
     else:
         return "Sangat Diperlukan"
@@ -384,6 +384,90 @@ def train_recommendation_model():
     model.fit(X, y)
     
     return model
+
+def evaluate_model_accuracy():
+    """Evaluate accuracy of the recommendation model using k-fold cross-validation"""
+    from sklearn.model_selection import train_test_split, cross_val_score
+    from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report
+    
+    # Get training data
+    X, y = build_training_data()
+    
+    if len(X) < 10:  # Need enough data for reliable evaluation
+        return {
+            "error": "Tidak cukup data untuk evaluasi yang akurat",
+            "min_required": 10,
+            "current_samples": len(X)
+        }
+        
+    try:
+        # Split data into training and testing sets (80/20 split)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+        
+        # Train model on training set
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model.fit(X_train, y_train)
+        
+        # Predict on test set
+        y_pred = model.predict(X_test)
+        
+        # Calculate metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            y_test, y_pred, average='weighted'
+        )
+        
+        # Get detailed classification report
+        report = classification_report(y_test, y_pred, output_dict=True)
+        
+        # Calculate 5-fold cross-validation scores
+        cv_scores = cross_val_score(model, X, y, cv=5)
+        
+        # Get feature importances
+        feature_importance = model.feature_importances_
+        features = []
+        
+        # Create simple feature descriptions
+        features.append({"name": "Nilai Sekarang", "importance": float(feature_importance[0])})
+        if len(feature_importance) > 1:
+            features.append({"name": "Rata-rata Prasyarat", "importance": float(feature_importance[1])})
+        if len(feature_importance) > 2:
+            features.append({"name": "Nilai Prasyarat Minimum", "importance": float(feature_importance[2])})
+        if len(feature_importance) > 3:
+            features.append({"name": "Nilai Prasyarat Maksimum", "importance": float(feature_importance[3])})
+        if len(feature_importance) > 4:
+            features.append({"name": "Standar Deviasi Prasyarat", "importance": float(feature_importance[4])})
+        
+        # Sort features by importance
+        features.sort(key=lambda x: x["importance"], reverse=True)
+        
+        # Return results
+        return {
+            "accuracy": float(accuracy),
+            "precision": float(precision),
+            "recall": float(recall),
+            "f1_score": float(f1),
+            "cross_validation": {
+                "scores": [float(score) for score in cv_scores],
+                "mean": float(cv_scores.mean()),
+                "std": float(cv_scores.std())
+            },
+            "class_metrics": report,
+            "feature_importance": features,
+            "training_samples": len(X_train),
+            "testing_samples": len(X_test),
+            "total_samples": len(X)
+        }
+    except Exception as e:
+        # Handle errors gracefully
+        import traceback
+        return {
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "samples": len(X)
+        }
 
 def get_recommendations(student_id):
     """Get recommendations for additional classes for a student"""

@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from models import db, AcademicYear, Class, Student, Chapter, ChapterDependency, Grade
-from services import get_recommendations, initialize_sample_data, initialize_indonesian_sample_data
+from services import get_recommendations, initialize_sample_data, initialize_indonesian_sample_data, evaluate_model_accuracy
 import utils
 
 # Configure logging
