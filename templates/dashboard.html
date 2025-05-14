@@ -6,11 +6,11 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Performance Dashboard</h1>
+    <h1>Dashboard Kinerja</h1>
     <div class="form-group">
-        <label for="class-selector" class="form-label">Select Class</label>
+        <label for="class-selector" class="form-label">Pilih Kelas</label>
         <select id="class-selector" class="form-control">
-            <option value="">Select a class</option>
+            <option value="">Pilih kelas</option>
             {% for class in classes %}
             <option value="{{ class.id }}" {% if selected_class and selected_class.id == class.id %}selected{% endif %}>
                 {{ class.name }} ({{ class.academic_year.name }})
@@ -92,17 +92,17 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Getting Started</h5>
+                <h5 class="mb-0">Memulai</h5>
             </div>
             <div class="card-body">
-                <p>Welcome to the Student Performance Analysis System! To get started:</p>
+                <p>Selamat datang di Sistem Analisis Kinerja Siswa! Untuk memulai:</p>
                 <ol>
-                    <li>Create an <a href="{{ url_for('classes') }}">Academic Year</a></li>
-                    <li>Create a <a href="{{ url_for('classes') }}">Class</a> within the academic year</li>
-                    <li>Add <a href="{{ url_for('students') }}">Students</a> to the class</li>
-                    <li>Define <a href="{{ url_for('chapters') }}">Chapters</a> and their dependencies</li>
-                    <li>Enter student grades for each chapter</li>
-                    <li>View <a href="{{ url_for('recommendations') }}">Recommendations</a> for additional classes</li>
+                    <li>Buat <a href="{{ url_for('classes') }}">Tahun Akademik</a></li>
+                    <li>Buat <a href="{{ url_for('classes') }}">Kelas</a> dalam tahun akademik</li>
+                    <li>Tambahkan <a href="{{ url_for('students') }}">Siswa</a> ke kelas</li>
+                    <li>Tentukan <a href="{{ url_for('chapters') }}">Bab</a> dan ketergantungannya</li>
+                    <li>Masukkan nilai siswa untuk setiap bab</li>
+                    <li>Lihat <a href="{{ url_for('recommendations') }}">Rekomendasi</a> untuk kelas tambahan</li>
                 </ol>
             </div>
         </div>
@@ -110,16 +110,16 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">System Overview</h5>
+                <h5 class="mb-0">Ikhtisar Sistem</h5>
             </div>
             <div class="card-body">
-                <p>This system helps you track, analyze, and provide recommendations for additional mathematics classes based on students' performance across different chapters and their dependencies.</p>
-                <p>Performance categories:</p>
+                <p>Sistem ini membantu Anda melacak, menganalisis, dan memberikan rekomendasi untuk kelas matematika tambahan berdasarkan kinerja siswa di berbagai bab dan ketergantungannya.</p>
+                <p>Kategori kinerja:</p>
                 <ul>
-                    <li><span class="score-special">Special Class (>90)</span></li>
-                    <li><span class="score-unnecessary">Unnecessary (80-90)</span></li>
-                    <li><span class="score-required">Required (70-80)</span></li>
-                    <li><span class="score-very-necessary">Very Necessary (&lt;70)</span></li>
+                    <li><span class="score-special">Kelas Khusus (>0.9)</span></li>
+                    <li><span class="score-unnecessary">Tidak Diperlukan (0.8-0.9)</span></li>
+                    <li><span class="score-required">Diperlukan (0.7-0.8)</span></li>
+                    <li><span class="score-very-necessary">Sangat Diperlukan (&lt;0.7)</span></li>
                 </ul>
             </div>
         </div>

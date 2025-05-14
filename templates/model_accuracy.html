@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Model Accuracy - EduTrack{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="h3 mb-0">Akurasi Model Random Forest</h1>
+            <div class="text-muted">Evaluasi performa algoritma yang digunakan untuk rekomendasi</div>
+        </div>
+    </div>
+
+    {% if accuracy_data.error %}
+    <div class="alert alert-warning">
+        <h5>Peringatan</h5>
+        <p>{{ accuracy_data.error }}</p>
+        {% if accuracy_data.min_required %}
+        <p>Jumlah sampel minimal yang diperlukan: {{ accuracy_data.min_required }}</p>
+        <p>Jumlah sampel saat ini: {{ accuracy_data.current_samples }}</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Metrik Akurasi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metric-card mb-3">
+                                <h6 class="text-muted">Akurasi</h6>
+                                <h2 class="metric-value">{{ (accuracy_data.accuracy * 100)|round(2) }}%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card mb-3">
+                                <h6 class="text-muted">Presisi</h6>
+                                <h2 class="metric-value">{{ (accuracy_data.precision * 100)|round(2) }}%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card mb-3">
+                                <h6 class="text-muted">Recall</h6>
+                                <h2 class="metric-value">{{ (accuracy_data.recall * 100)|round(2) }}%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card mb-3">
+                                <h6 class="text-muted">F1 Score</h6>
+                                <h2 class="metric-value">{{ (accuracy_data.f1_score * 100)|round(2) }}%</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Cross-Validation</h5>
+                </div>
+                <div class="card-body">
+                    <p>Rata-rata Akurasi: <strong>{{ (accuracy_data.cross_validation.mean * 100)|round(2) }}%</strong></p>
+                    <p>Standar Deviasi: <strong>{{ (accuracy_data.cross_validation.std * 100)|round(2) }}%</strong></p>
+                    
+                    <h6 class="mt-3">Skor per Fold:</h6>
+                    <ul>
+                        {% for score in accuracy_data.cross_validation.scores %}
+                        <li>Fold {{ loop.index }}: {{ (score * 100)|round(2) }}%</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Pentingnya Fitur</h5>
+                </div>
+                <div class="card-body">
+                    <div class="feature-importance-chart mb-3">
+                        <canvas id="feature-importance-chart" height="250"></canvas>
+                    </div>
+                    
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Fitur</th>
+                                <th>Pentingnya</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for feature in accuracy_data.feature_importance %}
+                            <tr>
+                                <td>{{ feature.name }}</td>
+                                <td>{{ (feature.importance * 100)|round(2) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informasi Dataset</h5>
+                </div>
+                <div class="card-body">
+                    <p>Total sampel: <strong>{{ accuracy_data.total_samples }}</strong></p>
+                    <p>Sampel pelatihan: <strong>{{ accuracy_data.training_samples }}</strong></p>
+                    <p>Sampel pengujian: <strong>{{ accuracy_data.testing_samples }}</strong></p>
+                    
+                    <div class="mt-3">
+                        <h6>Metrik per Kategori:</h6>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th>Presisi</th>
+                                    <th>Recall</th>
+                                    <th>F1</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category, metrics in accuracy_data.class_metrics.items() %}
+                                    {% if category != "accuracy" and category != "macro avg" and category != "weighted avg" %}
+                                    <tr>
+                                        <td>{{ category }}</td>
+                                        <td>{{ (metrics.precision * 100)|round(2) }}%</td>
+                                        <td>{{ (metrics.recall * 100)|round(2) }}%</td>
+                                        <td>{{ (metrics["f1-score"] * 100)|round(2) }}%</td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if not accuracy_data.error and accuracy_data.feature_importance %}
+    // Create feature importance chart
+    const featureCtx = document.getElementById('feature-importance-chart').getContext('2d');
+    
+    const featureNames = [];
+    const featureValues = [];
+    
+    {% for feature in accuracy_data.feature_importance %}
+    featureNames.push('{{ feature.name }}');
+    featureValues.push({{ feature.importance }});
+    {% endfor %}
+    
+    new Chart(featureCtx, {
+        type: 'bar',
+        data: {
+            labels: featureNames,
+            datasets: [{
+                label: 'Pentingnya Fitur',
+                data: featureValues,
+                backgroundColor: '#1565C0',
+                borderColor: '#1565C0',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return (context.raw * 100).toFixed(2) + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return (value * 100).toFixed(0) + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

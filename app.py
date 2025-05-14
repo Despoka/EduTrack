@@ -184,7 +184,11 @@ def update_grades():
     if student_id and chapter_id and score:
         try:
             score = float(score)
+            # Convert score to 0-1 scale if it's in 0-100 scale
             if 0 <= score <= 100:
+                if score > 1:  # If score is in 0-100 range, convert to 0-1
+                    score = score / 100.0
+                
                 # Check if grade exists
                 grade = Grade.query.filter_by(
                     student_id=student_id,
@@ -198,13 +202,13 @@ def update_grades():
                     db.session.add(grade)
                 
                 db.session.commit()
-                flash('Grade updated successfully', 'success')
+                flash('Nilai berhasil diperbarui', 'success')
             else:
-                flash('Score must be between 0 and 100', 'danger')
+                flash('Nilai harus antara 0 dan 100', 'danger')
         except ValueError:
-            flash('Score must be a valid number', 'danger')
+            flash('Nilai harus berupa angka yang valid', 'danger')
     else:
-        flash('Missing required information', 'danger')
+        flash('Informasi yang diperlukan tidak lengkap', 'danger')
     
     # Get the student and extract class_id if it exists
     student = Student.query.get(student_id) if student_id else None
@@ -246,6 +250,14 @@ def api_performance_data():
     
     performance_data = utils.prepare_performance_data(students, chapters)
     return jsonify(performance_data)
+
+@app.route('/model-accuracy')
+def model_accuracy():
+    # Evaluate the model and get accuracy metrics
+    accuracy_data = evaluate_model_accuracy()
+    
+    return render_template('model_accuracy.html', 
+                           accuracy_data=accuracy_data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
