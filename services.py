@@ -416,7 +416,7 @@ def train_recommendation_model():
 def evaluate_model_accuracy():
     """Evaluate accuracy of the recommendation model using k-fold cross-validation"""
     from sklearn.model_selection import train_test_split, cross_val_score
-    from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report
+    from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report, confusion_matrix
     import random
     import numpy as np
     
@@ -432,82 +432,14 @@ def evaluate_model_accuracy():
     # Fixed categories for consistency
     categories = ["Kelas Khusus", "Tidak Diperlukan", "Diperlukan", "Sangat Diperlukan"]
     
-    # If insufficient data for real evaluation, use predetermined realistic metrics
-    # This ensures the accuracy page will always display reasonable values
+    # For cases with insufficient data, provide warning but still try to calculate with available data
     if len(X) < 10:
-        # Create realistic results for thesis demonstration
-        # with accuracy in the 85-95% range
-        
-        # Generate a fixed but realistic accuracy
-        accuracy = 0.872
-        precision = 0.864
-        recall = 0.872
-        f1 = 0.868
-        
-        # Generate realistic cross-validation scores 
-        cv_scores = np.array([0.841, 0.894, 0.863, 0.879, 0.851])
-        mean_cv = np.mean(cv_scores)
-        std_cv = np.std(cv_scores)
-        
-        # Create realistic feature importances that sum to 1
-        feature_importances = np.array([0.38, 0.29, 0.17, 0.11, 0.05])
-        
-        # Prepare class metrics similar to sklearn's classification_report
-        class_metrics = {
-            "Kelas Khusus": {
-                "precision": 0.918, "recall": 0.883, "f1-score": 0.900, "support": 12
-            },
-            "Tidak Diperlukan": {
-                "precision": 0.842, "recall": 0.889, "f1-score": 0.865, "support": 18 
-            },
-            "Diperlukan": {
-                "precision": 0.810, "recall": 0.850, "f1-score": 0.829, "support": 20
-            },
-            "Sangat Diperlukan": {
-                "precision": 0.887, "recall": 0.866, "f1-score": 0.876, "support": 15
-            },
-            "accuracy": 0.872,
-            "macro avg": {
-                "precision": 0.864, "recall": 0.872, "f1-score": 0.868, "support": 65
-            },
-            "weighted avg": {
-                "precision": 0.861, "recall": 0.872, "f1-score": 0.866, "support": 65
-            }
-        }
-        
-        # Feature names matching our model
-        feature_names = [
-            "Nilai Sekarang", 
-            "Rata-rata Prasyarat", 
-            "Nilai Prasyarat Minimum", 
-            "Nilai Prasyarat Maksimum", 
-            "Standar Deviasi Prasyarat"
-        ]
-        
-        # Format feature importance data
-        features = []
-        for i, name in enumerate(feature_names):
-            if i < len(feature_importances):
-                features.append({"name": name, "importance": float(feature_importances[i])})
-        
-        # Sort features by importance
-        features.sort(key=lambda x: x["importance"], reverse=True)
-        
+        # Return a message indicating insufficient data
         return {
-            "accuracy": float(accuracy),
-            "precision": float(precision),
-            "recall": float(recall),
-            "f1_score": float(f1),
-            "cross_validation": {
-                "scores": [float(score) for score in cv_scores],
-                "mean": float(mean_cv),
-                "std": float(std_cv)
-            },
-            "class_metrics": class_metrics,
-            "feature_importance": features,
-            "training_samples": 52,
-            "testing_samples": 13,
-            "total_samples": 65
+            "error": "Tidak cukup data untuk evaluasi model yang akurat",
+            "min_required": 10,
+            "current_samples": len(X),
+            "message": "Tambahkan lebih banyak data siswa dan nilai untuk mendapatkan evaluasi model yang akurat."
         }
     
     # For cases with enough real data, calculate actual metrics with controlled noise
@@ -517,13 +449,8 @@ def evaluate_model_accuracy():
             X, y, test_size=0.2, random_state=42
         )
         
-        # Add realistic noise to training data (educational data is never perfect)
-        for i in range(len(X_train)):
-            # Add noise to each feature (between -7% and +7%)
-            for j in range(len(X_train[i])):
-                if X_train[i][j] > 0:  # Only add noise to non-zero features
-                    noise_factor = random.uniform(-0.07, 0.07)
-                    X_train[i][j] *= (1 + noise_factor)
+        # Using raw data without artificial modifications
+        # This provides more accurate academic results for thesis evaluation
         
         # Train model with parameters adjusted for educational data
         model = RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)
@@ -604,19 +531,29 @@ def evaluate_model_accuracy():
         
         features = []
         
-        # Create simple feature descriptions
-        features.append({"name": "Nilai Sekarang", "importance": float(feature_importance[0])})
-        if len(feature_importance) > 1:
-            features.append({"name": "Rata-rata Prasyarat", "importance": float(feature_importance[1])})
-        if len(feature_importance) > 2:
-            features.append({"name": "Nilai Prasyarat Minimum", "importance": float(feature_importance[2])})
-        if len(feature_importance) > 3:
-            features.append({"name": "Nilai Prasyarat Maksimum", "importance": float(feature_importance[3])})
-        if len(feature_importance) > 4:
-            features.append({"name": "Standar Deviasi Prasyarat", "importance": float(feature_importance[4])})
+        # Feature names matching our model inputs
+        feature_names = [
+            "Nilai Sekarang", 
+            "Rata-rata Prasyarat", 
+            "Nilai Prasyarat Minimum", 
+            "Nilai Prasyarat Maksimum", 
+            "Standar Deviasi Prasyarat"
+        ]
+        
+        # Create feature importance list with actual values
+        for i, name in enumerate(feature_names):
+            if i < len(feature_importance):
+                features.append({"name": name, "importance": float(feature_importance[i])})
         
         # Sort features by importance
         features.sort(key=lambda x: x["importance"], reverse=True)
+        
+        # Use imported libraries for metrics
+        
+        # Calculate confusion matrix for detailed class metrics
+        conf_matrix = confusion_matrix(y_test, y_pred)
+        
+        # Return actual metrics without artificial bounds
         
         return {
             "accuracy": float(accuracy),
@@ -632,43 +569,16 @@ def evaluate_model_accuracy():
             "feature_importance": features,
             "training_samples": len(X_train),
             "testing_samples": len(X_test),
-            "total_samples": len(X)
-        }
-        features.append({"name": "Nilai Sekarang", "importance": float(feature_importance[0])})
-        if len(feature_importance) > 1:
-            features.append({"name": "Rata-rata Prasyarat", "importance": float(feature_importance[1])})
-        if len(feature_importance) > 2:
-            features.append({"name": "Nilai Prasyarat Minimum", "importance": float(feature_importance[2])})
-        if len(feature_importance) > 3:
-            features.append({"name": "Nilai Prasyarat Maksimum", "importance": float(feature_importance[3])})
-        if len(feature_importance) > 4:
-            features.append({"name": "Standar Deviasi Prasyarat", "importance": float(feature_importance[4])})
-        
-        # Sort features by importance
-        features.sort(key=lambda x: x["importance"], reverse=True)
-        
-        # Return results with adjusted metrics for realism
-        return {
-            "accuracy": float(accuracy),
-            "precision": float(precision),
-            "recall": float(recall),
-            "f1_score": float(f1),
-            "cross_validation": {
-                "scores": [float(score) for score in cv_scores],
-                "mean": float(mean_cv),
-                "std": float(cv_scores.std())
-            },
-            "class_metrics": report,
-            "feature_importance": features,
-            "training_samples": len(X_train),
-            "testing_samples": len(X_test),
-            "total_samples": len(X)
+            "total_samples": len(X),
+            "confusion_matrix": conf_matrix.tolist()
         }
     except Exception as e:
-        # Handle errors gracefully
+        # Handle any unexpected errors gracefully
         import traceback
+        print(f"Error in model evaluation: {str(e)}")
         return {
-            "error": str(e),
+            "error": "Terjadi kesalahan saat mengevaluasi model",
+            "message": str(e),
             "traceback": traceback.format_exc(),
             "samples": len(X)
         }
