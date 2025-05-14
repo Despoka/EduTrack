@@ -92,14 +92,15 @@ function createAverageScoresChart(chapterNames, averageScores) {
     const ctx = document.getElementById('average-scores-chart');
     if (!ctx) return;
     
-    // Filter out chapters with no data
+    // Filter out chapters with no data and convert scores to 0-100 scale
     const filteredChapters = [];
     const filteredScores = [];
     
     for (let i = 0; i < chapterNames.length; i++) {
         if (averageScores[i] !== null) {
             filteredChapters.push(chapterNames[i]);
-            filteredScores.push(averageScores[i]);
+            // Convert from 0-1 scale to 0-100 for display
+            filteredScores.push(averageScores[i] * 100);
         }
     }
     
@@ -190,14 +191,16 @@ function createPerformanceHeatmap(data) {
             const cell = document.createElement('td');
             
             if (score !== null) {
-                cell.textContent = score;
+                // Convert 0-1 score to 0-100 display
+                let displayScore = (score * 100).toFixed(1);
+                cell.textContent = displayScore;
                 
-                // Add color based on score
-                if (score >= 90) {
+                // Add color based on 0-1 scale score
+                if (score >= 0.9) {
                     cell.className = 'score-cell special';
-                } else if (score >= 80) {
+                } else if (score >= 0.8) {
                     cell.className = 'score-cell unnecessary';
-                } else if (score >= 70) {
+                } else if (score >= 0.7) {
                     cell.className = 'score-cell required';
                 } else {
                     cell.className = 'score-cell very-necessary';
