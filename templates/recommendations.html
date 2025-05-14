@@ -110,14 +110,15 @@
                                 <td>{{ chapter.name }}</td>
                                 <td>
                                     {% if current_score.value is not none %}
-                                        {% if current_score.value >= 90 %}
-                                        <span class="score-special">{{ current_score.value }}</span>
-                                        {% elif current_score.value >= 80 %}
-                                        <span class="score-unnecessary">{{ current_score.value }}</span>
-                                        {% elif current_score.value >= 70 %}
-                                        <span class="score-required">{{ current_score.value }}</span>
+                                        {% set display_score = (current_score.value * 100)|round(1) %}
+                                        {% if current_score.value >= 0.9 %}
+                                        <span class="score-special">{{ display_score }}</span>
+                                        {% elif current_score.value >= 0.8 %}
+                                        <span class="score-unnecessary">{{ display_score }}</span>
+                                        {% elif current_score.value >= 0.7 %}
+                                        <span class="score-required">{{ display_score }}</span>
                                         {% else %}
-                                        <span class="score-very-necessary">{{ current_score.value }}</span>
+                                        <span class="score-very-necessary">{{ display_score }}</span>
                                         {% endif %}
                                     {% else %}
                                         <span class="text-muted">Belum dinilai</span>

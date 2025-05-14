@@ -147,19 +147,20 @@
                             <td>
                                 {% if grade.found %}
                                 <div class="score-display" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}" data-score="{{ grade.score }}">
-                                    {% if grade.score >= 90 %}
-                                    <span class="score-special">{{ grade.score }}</span>
-                                    {% elif grade.score >= 80 %}
-                                    <span class="score-unnecessary">{{ grade.score }}</span>
-                                    {% elif grade.score >= 70 %}
-                                    <span class="score-required">{{ grade.score }}</span>
+                                    {% set display_score = (grade.score * 100)|round(1) %}
+                                    {% if grade.score >= 0.9 %}
+                                    <span class="score-special">{{ display_score }}</span>
+                                    {% elif grade.score >= 0.8 %}
+                                    <span class="score-unnecessary">{{ display_score }}</span>
+                                    {% elif grade.score >= 0.7 %}
+                                    <span class="score-required">{{ display_score }}</span>
                                     {% else %}
-                                    <span class="score-very-necessary">{{ grade.score }}</span>
+                                    <span class="score-very-necessary">{{ display_score }}</span>
                                     {% endif %}
                                 </div>
                                 <form class="grade-form" action="{{ url_for('update_grades') }}" method="post" style="display: none;" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}">
                                     <div class="input-group input-group-sm">
-                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" value="{{ grade.score }}">
+                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" value="{{ (grade.score * 100)|round(1) }}">
                                         <input type="hidden" name="student_id" value="{{ student.id }}">
                                         <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
                                         <button type="submit" class="btn btn-sm btn-success">✓</button>
