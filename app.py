@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from models import db, AcademicYear, Class, Student, Chapter, ChapterDependency, Grade
-from services import get_recommendations, initialize_sample_data, initialize_indonesian_sample_data, evaluate_model_accuracy
+from services import get_recommendations, initialize_sample_data, initialize_indonesian_sample_data, evaluate_model_accuracy, ensure_all_students_have_grades
 import utils
 
 # Configure logging
@@ -25,6 +25,9 @@ with app.app_context():
     initialize_sample_data()
     # Initialize Indonesian sample data
     initialize_indonesian_sample_data()
+    # Ensure all students have grades for all chapters
+    num_students_updated = ensure_all_students_have_grades()
+    print(f"Updated {num_students_updated} students to ensure all have grades for all chapters")
     
 # Add global template context
 @app.context_processor

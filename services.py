@@ -323,6 +323,43 @@ def get_dependency_graph():
     
     return graph
 
+def ensure_all_students_have_grades():
+    """Ensure every student has a grade for each chapter
+    
+    If a student is missing grades for any chapter, assign a random grade
+    between 60-90 for those chapters only. Existing grades are preserved.
+    """
+    import random
+    
+    # Get all students and chapters
+    students = Student.query.all()
+    chapters = Chapter.query.all()
+    
+    # Loop through each student
+    for student in students:
+        # Get existing grades for this student
+        existing_grades = get_student_grades(student.id)
+        
+        # Check each chapter
+        for chapter in chapters:
+            # If the student doesn't have a grade for this chapter
+            if chapter.id not in existing_grades:
+                # Generate a random score between 60-90
+                score = random.uniform(60, 90)
+                
+                # Convert to 0-1 scale for storage
+                normalized_score = float(score) / 100.0
+                
+                # Create new grade
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=normalized_score)
+                db.session.add(grade)
+    
+    # Commit all changes at once
+    db.session.commit()
+    
+    # Return the count of students processed
+    return len(students)
+
 def build_training_data():
     """Build training data for the Random Forest model"""
     # Get all students and chapters
