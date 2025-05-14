@@ -48,12 +48,12 @@ def prepare_performance_data(students, chapters):
                 student_data['scores'].append(score)
                 result['average_scores'][i].append(score)
                 
-                # Update performance categories count
-                if score >= 90:
+                # Update performance categories count - use 0-1 scale thresholds
+                if score >= 0.9:
                     result['performance_categories']['special_class'] += 1
-                elif score >= 80:
+                elif score >= 0.8:
                     result['performance_categories']['unnecessary'] += 1
-                elif score >= 70:
+                elif score >= 0.7:
                     result['performance_categories']['required'] += 1
                 else:
                     result['performance_categories']['very_necessary'] += 1

@@ -275,7 +275,10 @@ def initialize_indonesian_sample_data():
                 score = base_ability + chapter_adjustment + random.uniform(-10, 10)
                 score = max(50, min(100, round(score)))  # Keep between 50-100 and round to integer
                 
-                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=float(score))
+                # Convert to 0-1 scale for storage
+                normalized_score = float(score) / 100.0
+                
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=normalized_score)
                 db.session.add(grade)
     
     db.session.commit()

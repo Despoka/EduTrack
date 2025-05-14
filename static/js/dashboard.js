@@ -47,10 +47,10 @@ function createPerformanceDistributionChart(categories) {
         type: 'pie',
         data: {
             labels: [
-                'Kelas Khusus (>0.9)', 
-                'Tidak Diperlukan (0.8-0.9)', 
-                'Diperlukan (0.7-0.8)', 
-                'Sangat Diperlukan (<0.7)',
+                'Kelas Khusus (>90)', 
+                'Tidak Diperlukan (80-90)', 
+                'Diperlukan (70-80)', 
+                'Sangat Diperlukan (<70)',
                 'Tidak Ada Data'
             ],
             datasets: [{
