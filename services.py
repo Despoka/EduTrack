@@ -234,23 +234,30 @@ def initialize_indonesian_sample_data():
                 score = base_ability + chapter_difficulty + random.uniform(-15, 15)
                 score = max(50, min(100, score))  # Keep between 50-100
                 
-                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
+                # Convert to 0-1 scale for storage
+                normalized_score = float(score) / 100.0
+                
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=normalized_score)
                 db.session.add(grade)
         
         elif "Kelas 10B" in class_name:
-            # Give grades for only the first 5 chapters to class 10B
-            for chapter in chapters[:5]:
+            # Give grades for ALL chapters to class 10B
+            for chapter in chapters:
                 score = random.uniform(65, 90)
-                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
+                # Convert to 0-1 scale for storage
+                normalized_score = float(score) / 100.0
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=normalized_score)
                 db.session.add(grade)
                 
         elif "Kelas 11A" in class_name:
-            # Class 11A has more advanced material covered
+            # Class 11A has all chapters covered
             for chapter in chapters:
-                if random.random() < 0.8:  # 80% chance to have a grade for each chapter
-                    score = random.uniform(70, 95)  # Higher average scores for 11A
-                    grade = Grade(student_id=student.id, chapter_id=chapter.id, score=round(score, 1))
-                    db.session.add(grade)
+                # All students have all grades (removed probability check)
+                score = random.uniform(70, 95)  # Higher average scores for 11A
+                # Convert to 0-1 scale for storage
+                normalized_score = float(score) / 100.0
+                grade = Grade(student_id=student.id, chapter_id=chapter.id, score=normalized_score)
+                db.session.add(grade)
                     
         elif "XII MIPA" in class_name:
             # For XII MIPA classes, use the data pattern from the image for MIPA 1 (with variation)
@@ -564,22 +571,15 @@ def evaluate_model_accuracy():
             y_test, y_pred, average='weighted'
         )
         
-        # Bound accuracy to realistic range for educational predictions
-        accuracy = min(max(0.83, accuracy), 0.94)
-        precision = min(max(0.82, precision), 0.93)
-        recall = min(max(0.82, recall), 0.93)
-        f1 = min(max(0.82, f1), 0.93)
+        # Use actual calculated values without artificial bounds
+        # This allows us to report the true model performance
         
         # Get detailed classification report
         report = classification_report(y_test, y_pred, output_dict=True)
         
-        # Create consistent cross-validation scores in the 80-95% range
-        cv_scores = []
-        for fold in range(5):
-            base_score = random.uniform(0.83, 0.91)
-            cv_scores.append(base_score + random.uniform(-0.02, 0.02))
-        
-        cv_scores = np.array(cv_scores)
+        # Calculate real cross-validation scores
+        cv_model = RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)
+        cv_scores = cross_val_score(cv_model, X, y, cv=5)
         mean_cv = np.mean(cv_scores)
         
         # Get feature importances with guaranteed proper distribution
@@ -596,16 +596,10 @@ def evaluate_model_accuracy():
             # Normalize to sum to 1
             feature_importance = feature_importance / np.sum(feature_importance)
         
-        # Add controlled randomness to feature importance
-        adjusted_importance = []
-        for imp in feature_importance:
-            # Add small random variation
-            adjusted_value = imp * (1 + random.uniform(-0.08, 0.08))
-            # Ensure positive values
-            adjusted_importance.append(max(0.001, adjusted_value))
-        
-        # Renormalize to sum to 1
-        feature_importance = np.array(adjusted_importance)
+        # Use actual feature importance without artificial randomness
+        # Just ensure non-zero values and proper normalization
+        feature_importance = np.array([max(0.001, imp) for imp in feature_importance])
+        # Normalize to sum to 1
         feature_importance = feature_importance / np.sum(feature_importance)
         
         features = []
