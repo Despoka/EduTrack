@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Students - Student Performance Analysis</title>
+<title>Siswa - Analisis Kinerja Siswa</title>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Students Management</h1>
+    <h1>Manajemen Siswa</h1>
     <div class="form-group">
-        <label for="class-selector" class="form-label">Select Class</label>
+        <label for="class-selector" class="form-label">Pilih Kelas</label>
         <select id="class-selector" class="form-control">
-            <option value="">Select a class</option>
+            <option value="">Pilih kelas</option>
             {% for class in classes %}
             <option value="{{ class.id }}" {% if selected_class and selected_class.id == class.id %}selected{% endif %}>
                 {{ class.name }} ({{ class.academic_year.name }})
@@ -25,17 +25,17 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Add Student to {{ selected_class.name }}</h5>
+                <h5 class="mb-0">Tambah Siswa ke {{ selected_class.name }}</h5>
             </div>
             <div class="card-body">
                 <form id="add-student-form" method="POST" action="{{ url_for('students') }}">
                     <div class="form-group mb-3">
-                        <label for="student-name" class="form-label">Student Name</label>
-                        <input type="text" class="form-control" id="student-name" name="student_name" placeholder="Enter student name">
+                        <label for="student-name" class="form-label">Nama Siswa</label>
+                        <input type="text" class="form-control" id="student-name" name="student_name" placeholder="Masukkan nama siswa">
                     </div>
                     <input type="hidden" name="class_id" value="{{ selected_class.id }}">
                     <button type="submit" class="btn btn-primary" name="add_student" value="1">
-                        <i class="fas fa-plus me-1"></i> Add Student
+                        <i class="fas fa-plus me-1"></i> Tambah Siswa
                     </button>
                 </form>
             </div>
@@ -45,7 +45,7 @@
     <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Students in {{ selected_class.name }}</h5>
+                <h5 class="mb-0">Siswa di {{ selected_class.name }}</h5>
             </div>
             <div class="card-body">
                 {% if students %}
@@ -54,8 +54,8 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Student Name</th>
-                                <th>Performance</th>
+                                <th>Nama Siswa</th>
+                                <th>Kinerja</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,7 +84,7 @@
                                         <span class="score-very-necessary">{{ avg_score }}</span>
                                         {% endif %}
                                     {% else %}
-                                        <span class="score-no-data">N/A</span>
+                                        <span class="score-no-data">T/A</span>
                                     {% endif %}
                                     {% else %}
                                     <span class="score-no-data">N/A</span>
@@ -96,7 +96,7 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="text-muted">No students added to this class yet.</p>
+                <p class="text-muted">Belum ada siswa yang ditambahkan ke kelas ini.</p>
                 {% endif %}
             </div>
         </div>
@@ -106,7 +106,7 @@
 {% if students %}
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Student Grades</h5>
+        <h5 class="mb-0">Nilai Siswa</h5>
     </div>
     <div class="card-body">
         {% set chapters = namespace(all=[]) %}
@@ -125,7 +125,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Student</th>
+                        <th>Siswa</th>
                         {% for chapter in all_chapters.list %}
                         <th>{{ chapter.name }}</th>
                         {% endfor %}
