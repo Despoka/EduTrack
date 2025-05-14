@@ -87,7 +87,7 @@
                                         <span class="score-no-data">T/A</span>
                                     {% endif %}
                                     {% else %}
-                                    <span class="score-no-data">N/A</span>
+                                    <span class="score-no-data">T/A</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -168,11 +168,11 @@
                                 </form>
                                 {% else %}
                                 <div class="score-display" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}" data-score="">
-                                    <span class="score-no-data">N/A</span>
+                                    <span class="score-no-data">T/A</span>
                                 </div>
                                 <form class="grade-form" action="{{ url_for('update_grades') }}" method="post" style="display: none;" data-student-id="{{ student.id }}" data-chapter-id="{{ chapter.id }}">
                                     <div class="input-group input-group-sm">
-                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" placeholder="Score">
+                                        <input type="number" min="0" max="100" step="0.1" class="form-control score-input" name="score" placeholder="Nilai">
                                         <input type="hidden" name="student_id" value="{{ student.id }}">
                                         <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
                                         <button type="submit" class="btn btn-sm btn-success">✓</button>
@@ -188,7 +188,7 @@
             </table>
         </div>
         <div class="mt-3">
-            <small class="text-muted">Click on any score to edit it. Click outside to cancel.</small>
+            <small class="text-muted">Klik pada nilai untuk mengedit. Klik di luar untuk membatalkan.</small>
         </div>
     </div>
 </div>
@@ -196,19 +196,19 @@
 
 {% else %}
 <div class="alert alert-info">
-    <i class="fas fa-info-circle me-2"></i> Please select a class to manage students
+    <i class="fas fa-info-circle me-2"></i> Silakan pilih kelas untuk mengelola siswa
 </div>
 
 <div class="row">
     <div class="col-md-6 mx-auto">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Create a Class First</h5>
+                <h5 class="mb-0">Buat Kelas Terlebih Dahulu</h5>
             </div>
             <div class="card-body">
-                <p>To manage students, you need to first create a class.</p>
+                <p>Untuk mengelola siswa, Anda perlu membuat kelas terlebih dahulu.</p>
                 <a href="{{ url_for('classes') }}" class="btn btn-primary">
-                    <i class="fas fa-chalkboard me-1"></i> Go to Classes Management
+                    <i class="fas fa-chalkboard me-1"></i> Buka Manajemen Kelas
                 </a>
             </div>
         </div>
