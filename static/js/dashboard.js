@@ -131,7 +131,7 @@ function createAverageScoresChart(chapterNames, averageScores) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Chapter'
+                        text: 'Bab'
                     }
                 }
             }
@@ -203,7 +203,7 @@ function createPerformanceHeatmap(data) {
                     cell.className = 'score-cell very-necessary';
                 }
             } else {
-                cell.textContent = 'N/A';
+                cell.textContent = 'T/A';
                 cell.className = 'score-cell no-data';
             }
             
