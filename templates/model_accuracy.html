@@ -158,7 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     {% for feature in accuracy_data.feature_importance %}
     featureNames.push('{{ feature.name }}');
-    featureValues.push({{ feature.importance }});
+    // Ensure we handle any potential NaN or invalid values
+    var importanceValue = {{ feature.importance }};
+    if (isNaN(importanceValue) || importanceValue === null || importanceValue === undefined) {
+        importanceValue = 0;
+    }
+    featureValues.push(importanceValue);
     {% endfor %}
     
     new Chart(featureCtx, {
@@ -184,6 +189,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
+                            // Guard against potential NaN, null or undefined values
+                            if (isNaN(context.raw) || context.raw === null || context.raw === undefined) {
+                                return '0.00%';
+                            }
                             return (context.raw * 100).toFixed(2) + '%';
                         }
                     }
@@ -194,6 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     beginAtZero: true,
                     ticks: {
                         callback: function(value) {
+                            // Guard against potential NaN, null or undefined values
+                            if (isNaN(value) || value === null || value === undefined) {
+                                return '0%';
+                            }
                             return (value * 100).toFixed(0) + '%';
                         }
                     }
