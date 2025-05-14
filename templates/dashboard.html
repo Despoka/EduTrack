@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Dashboard - Student Performance Analysis</title>
+<title>Dashboard - Analisis Kinerja Siswa</title>
 {% endblock %}
 
 {% block content %}
@@ -25,18 +25,18 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Class Information</h5>
+                <h5 class="mb-0">Informasi Kelas</h5>
             </div>
             <div class="card-body">
-                <p><strong>Class:</strong> {{ selected_class.name }}</p>
-                <p><strong>Academic Year:</strong> {{ selected_class.academic_year.name }}</p>
-                <p><strong>Number of Students:</strong> {{ students|length }}</p>
+                <p><strong>Kelas:</strong> {{ selected_class.name }}</p>
+                <p><strong>Tahun Akademik:</strong> {{ selected_class.academic_year.name }}</p>
+                <p><strong>Jumlah Siswa:</strong> {{ students|length }}</p>
                 <div class="mt-3">
                     <a href="{{ url_for('students', class_id=selected_class.id) }}" class="btn btn-primary">
-                        <i class="fas fa-user-graduate me-1"></i> Manage Students
+                        <i class="fas fa-user-graduate me-1"></i> Kelola Siswa
                     </a>
                     <a href="{{ url_for('recommendations', class_id=selected_class.id) }}" class="btn btn-secondary ms-2">
-                        <i class="fas fa-lightbulb me-1"></i> View Recommendations
+                        <i class="fas fa-lightbulb me-1"></i> Lihat Rekomendasi
                     </a>
                 </div>
             </div>
@@ -45,7 +45,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Performance Distribution</h5>
+                <h5 class="mb-0">Distribusi Kinerja</h5>
             </div>
             <div class="card-body">
                 <div class="chart-container">
@@ -58,7 +58,7 @@
 
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="mb-0">Average Scores by Chapter</h5>
+        <h5 class="mb-0">Nilai Rata-rata per Bab</h5>
     </div>
     <div class="card-body">
         <div class="chart-container">
@@ -69,9 +69,9 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Performance Heatmap</h5>
+        <h5 class="mb-0">Peta Panas Kinerja</h5>
         <a href="{{ url_for('students', class_id=selected_class.id) }}" class="btn btn-sm btn-outline-primary">
-            <i class="fas fa-edit me-1"></i> Edit Grades
+            <i class="fas fa-edit me-1"></i> Edit Nilai
         </a>
     </div>
     <div class="card-body">
@@ -85,7 +85,7 @@
 </script>
 {% else %}
 <div class="alert alert-info">
-    <i class="fas fa-info-circle me-2"></i> Please select a class to view the dashboard
+    <i class="fas fa-info-circle me-2"></i> Silakan pilih kelas untuk melihat dashboard
 </div>
 
 <div class="row">

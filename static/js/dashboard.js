@@ -47,11 +47,11 @@ function createPerformanceDistributionChart(categories) {
         type: 'pie',
         data: {
             labels: [
-                'Special Class (>90)', 
-                'Unnecessary (80-90)', 
-                'Required (70-80)', 
-                'Very Necessary (<70)',
-                'No Data'
+                'Kelas Khusus (>0.9)', 
+                'Tidak Diperlukan (0.8-0.9)', 
+                'Diperlukan (0.7-0.8)', 
+                'Sangat Diperlukan (<0.7)',
+                'Tidak Ada Data'
             ],
             datasets: [{
                 data: [
@@ -109,7 +109,7 @@ function createAverageScoresChart(chapterNames, averageScores) {
         data: {
             labels: filteredChapters,
             datasets: [{
-                label: 'Average Score',
+                label: 'Nilai Rata-rata',
                 data: filteredScores,
                 backgroundColor: '#1565C0',
                 borderColor: '#1565C0',
@@ -125,7 +125,7 @@ function createAverageScoresChart(chapterNames, averageScores) {
                     max: 100,
                     title: {
                         display: true,
-                        text: 'Score'
+                        text: 'Nilai'
                     }
                 },
                 x: {
