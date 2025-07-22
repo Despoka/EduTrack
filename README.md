@@ -41,6 +41,8 @@ Gunakan Virtual Environment
 - pip install -r requirements.txt
 
 ## File .env
-FLASK_APP=app.py /nFLASK_ENV=development /nDATABASE_URL=mysql://username:password@localhost/nama_database
+- FLASK_APP=app.py 
+- FLASK_ENV=development
+- DATABASE_URL=mysql://username:password@localhost/nama_database
 
 
